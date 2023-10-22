@@ -14,44 +14,19 @@ class RedisClient {
   }
 
   async get (key) {
-    try{
-      const value = await this.client.get(key)
-      await this.client.disconnect();
-      return value;
-    }catch(error){
-      await this.client.connect();
-      const value = await this.client.get(key);
-      await this.client.disconnect()
-      return value;
-    }
+    return await this.client.get(key)
   }
 
   async set (key, value, duration) {
-    try{
-      await this.client.set(key, value);
-      await this.client.expire(key, duration);
-      await this.client.disconnect();
-    }catch(error){
-      await this.client.connect();
-      await this.client.set(key, value);
-      await this.client.expire(key, duration);
-      await this.client.disconnect();
-    }
-    
+    await this.client.set(key, value);
+    await this.client.expire(key, duration);
   }
 
   async del(key){
-    this.client.on('error', (error) => {
-      await this.client.connect();
-      await this.client.del(key);
-      await this.client.disconnect();
-    })
-    this.client.on('connect', () => {
-      await this.client.del(key));
-      await this.client.disconnect();
-    }
+    await this.client.del(key);
   }
 }
 
 const redisClient = new RedisClient();
 module.exports = redisClient;
+
