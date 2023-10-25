@@ -19,17 +19,20 @@ const AuthController = {
       return res.status(401).json({ error: 'Unauthorized' })
     }
     const id = uuidv4().toString();
-    await redis.set(id, user._id.toString(), 86400);
+    const key = `auth_${id}`
+    await redis.set(key, user._id.toString(), 86400);
     return res.status(200).json({ token: id })
   },
   getDisconnect: async function(req, res){
-    let user = await redis.get(req.headers['x-token']);
+    let token = `auth_${req.headers[x-token]}`
+    let user = await redis.get(token);
     if(!user) return res.status(401).json({ error: 'Unauthorized' });
-    await redis.del(req.headers['x-token'])
+    await redis.del(token)
     return res.status(204)
   },
   getMe: async function(req, res){
-    let id = await redis.get(req.headers['x-token']);
+    let token = `auth_${req.headers['x-token']}`
+    let id = await redis.get(token);
     if(!id) return res.status(401).json({ error: 'Unauthorized' })
     let user = await db.client.db().collection('users').findOne({ _id: new ObjectId(id)})
     return res.json({ email: user.email, id: user._id })

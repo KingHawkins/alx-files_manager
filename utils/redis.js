@@ -29,7 +29,5 @@ class RedisClient {
     await this.client.del(key);
   }
 }
-
-const redisClient = new RedisClient();
-module.exports = redisClient;
-
+let redisClient = new RedisClient();
+module.exports = redisClient
