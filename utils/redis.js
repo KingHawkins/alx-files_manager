@@ -14,12 +14,15 @@ class RedisClient {
   }
 
   async get (key) {
-    return await this.client.get(key)
+    const value = await this.client.get(key)
+    return value
   }
 
   async set (key, value, duration) {
-    await this.client.set(key, value);
-    await this.client.expire(key, duration);
+    await this.client.set(key, value, {
+      EX: duration,
+      NX: true,
+    });
   }
 
   async del(key){
